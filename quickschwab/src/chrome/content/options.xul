@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<prefwindow title="QuickSchwab Preferences"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <prefpane label="QuickSchwab Preferences">
+    <preferences>
+      <preference id="savefile"
+		  name="extensions.quickschwab.savefile"
+		  type="string"/>
+      <preference id="acctnum"
+		  name="extensions.quickschwab.acctnum"
+		  type="string"/>
+    </preferences>
+
+    <description>Where should I write the .qfx file?</description>
+    <description>This should be a file that you will never use,</description>
+    <description>as I will overwrite it without prompting.</description>
+    <textbox preference="savefile" id="savefileBox" width="500" />
+
+    <description>Account Number for the card that you're exporting:</description>
+    <textbox preference="acctnum" id="acctnumBox" width="500" />
+
+  </prefpane>
+
+</prefwindow>

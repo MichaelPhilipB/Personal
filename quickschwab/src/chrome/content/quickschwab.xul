@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<overlay id="quickschwab" 
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://quickschwab/content/jsio.js" />
+  <script type="application/x-javascript" src="chrome://quickschwab/content/date.js" />
+  <script type="application/x-javascript" src="chrome://quickschwab/content/qsCore.js" />
+  <script type="application/x-javascript" src="chrome://quickschwab/content/SchwabReader.js" />
+  <script type="application/x-javascript" src="chrome://quickschwab/content/QfxWriter.js" />
+  <script type="application/x-javascript" src="chrome://quickschwab/content/quickschwab.js" />
+
+  <script type="application/x-javascript">
+    qsInit();
+  </script>
+
+ <statusbar id="status-bar">
+  <statusbarpanel id="my-panel"
+		  label="Hello, World"
+		  onclick="qsRun();" />
+ </statusbar>
+  <?ignore
+ ?>
+</overlay>

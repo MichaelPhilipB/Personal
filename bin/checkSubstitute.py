@@ -172,19 +172,22 @@ def readAndSendEmail():
     """Reads the web page and sends an email for the specified user.
     """
 
-    thePage = readJobsPage()
-    
+    # Load the list of jobs we've seen before.
+
     pickleFile = 'c:/Users/mbrady/Documents/checkSubstituteSeenIds.txt'
 
     seenIds = []
     if os.path.exists(pickleFile):
         seenIds = pickle.load(open(pickleFile, 'r'))
 
-    #text = open('aseopHome.htm').read()
+    # Read the list of jobs from the web page.
 
+    thePage = readJobsPage()
     jobs = parse(thePage)
 
+    # Jobs we've never seen before.
     newJobs = []
+
     for jobTuple in jobs:
         id = jobTuple[0]
         print seenIds, id, id in seenIds
@@ -193,14 +196,17 @@ def readAndSendEmail():
             newJobs.append(jobTuple)
             seenIds.append(id)
 
-    print 'SEEN IDS'
-    print seenIds
+    # Save the updated list of jobs we've seen.
+
     pickle.dump(seenIds, open(pickleFile, 'w'))
 
-    print 'NEW JOBS'
-    print newJobs    
+    #print 'SEEN IDS'
+    #print seenIds
 
-    if False and newJobs:
+    #print 'NEW JOBS'
+    #print newJobs    
+
+    if newJobs:
     
         mailMsg = "New Jobs on Aseop:\n"
         #mailMsg += "https://catalog.oslri.net/patroninfo\n"

@@ -21,11 +21,13 @@ import urllib
 import urllib2
 
 #------------------------------------------------------------------------
-# A dictionary of names to email.
-#users = {
-#    "Michael" : ("Michael.Philip.Brady@gmail.com"),
-#    "Eileen"  : ("eileenbrady98@gmail.com"),
-#    }
+# A list of addresses to receive emails.
+userEmails = ('Michael.Philip.Brady@gmail.com',
+              '4013384407@tmomail.net',                  
+              'eileenbrady98@gmail.com',
+              '4013384401@tmomail.net',              
+              #'acatani@gmail.com',
+              )
 
 #------------------------------------------------------------------------
 def parse(text):
@@ -64,8 +66,8 @@ def parse(text):
     ret = []
     for job in jobList:
      
-        id, workerTitle, workerLastName, school = extractInfo(job)
-        ret.append((id, workerTitle, workerLastName, school))
+        id, startEnd, workerTitle, workerLastName, school = extractInfo(job)
+        ret.append((id, startEnd, workerTitle, workerLastName, school))
 
     return ret
 
@@ -77,6 +79,7 @@ def extractInfo(jobDict):
     workerTitle = "unknown"
     workerLastName = "unknown"
     school = "unknown"
+    startEnd = "unknown"
 
     if 'Id' not in jobDict:
         raise Exception("No ID in job dict: " + str(jobDict))
@@ -97,7 +100,33 @@ def extractInfo(jobDict):
               if 'Name' in institution:
                   school = institution['Name']
 
-    return id, workerTitle, workerLastName, school
+          start = extractDate(item, 'Start')
+          end = extractDate(item, 'End')
+
+          if start:
+              startEnd = start
+          if end and start != end:
+              startEnd += "-" + end
+
+    return id, startEnd, workerTitle, workerLastName, school
+
+#------------------------------------------------------------------------
+def extractDate(itemDict, key):
+    '''Extracts a single date value from a dictionary.
+    '''
+
+    value = None
+
+    if key in itemDict:
+        value = itemDict[key]
+
+        # Parse just the date from the dateTtime ISO string.
+        if 'T' in value:
+            value = value.split('T')[0]
+
+        value = value.replace('-', '/')
+
+    return value
 
 #------------------------------------------------------------------------
 def readJobsPage():
@@ -113,12 +142,6 @@ def readJobsPage():
     # Log in.
     
     url = 'https://www.aesoponline.com/login.asp'
-
-    #print 'DOWNLOAD JOBS PAGE'
-    # Download the log in page.  We won't use this for anything,
-    # but it gets the session cookies set up.
-    #req = urllib2.Request(url)
-    #urllib2.urlopen(req)
 
     # Post the log in form.
     values = {'id' : '4013384401',
@@ -148,7 +171,7 @@ def sendGmail(mailTo, mailBody):
     smtpPassword = "Naz3#gul"
 
     mailFrom =  "Michael.Philip.Brady@gmail.com"
-    mailSubject = "Barrington Library books due soon"
+    mailSubject = "New Sub Job"
 
     mailText = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n%s" % (mailFrom,
                                                                 mailTo,
@@ -185,12 +208,13 @@ def readAndSendEmail():
     thePage = readJobsPage()
     jobs = parse(thePage)
 
+    #jobs.append(('sampleId', 'sampleName', 'sampleTitle', 'sampleSchool'))
+
     # Jobs we've never seen before.
     newJobs = []
 
     for jobTuple in jobs:
         id = jobTuple[0]
-        print seenIds, id, id in seenIds
         
         if id not in seenIds:
             newJobs.append(jobTuple)
@@ -209,17 +233,14 @@ def readAndSendEmail():
     if newJobs:
     
         mailMsg = "New Jobs on Aseop:\n"
-        #mailMsg += "https://catalog.oslri.net/patroninfo\n"
 
-        for id, workerTitle, workerLastName, school in newJobs:
+        for id, startEnd, workerTitle, workerLastName, school in newJobs:
 
             mailMsg += "----------------\n"
             mailMsg += ("%s %s %s %s\n" %
-                        (id, workerTitle, workerLastName, school))
+                        (startEnd, workerTitle, workerLastName, school))
 
-        emails = ('Michael.Philip.Brady@gmail.com',
-                  'eileenbrady98@gmail.com')
-        for userEmail in emails:
+        for userEmail in userEmails:
             sendGmail(userEmail, mailMsg)
 
 #------------------------------------------------------------------------
@@ -238,58 +259,12 @@ def checkJobs():
         excMsg = "".join(excMsgLines)
         msg += excMsg
 
-        # TODO remove
-        raise e
         emails = ('Michael.Philip.Brady@gmail.com',
                   'eileenbrady98@gmail.com')
         for userEmail in emails:
             sendGmail(userEmail, msg)
 
-#========================================================================
-class DueDateParser(htmllib.HTMLParser):
-    """Parses a library HTML page to find book tiles and due dates.
-    """
-
-    #--------------------------------------------------------------------
-    def __init__(self, verbose=0):
-        htmllib.HTMLParser.__init__(self,
-                                    formatter.NullFormatter(),
-                                    verbose)
-        
-        # A list of (title, daysUntilDue) tuples.
-        self.booksDue = []
-
-        self.inTitle = False
-        self.title = None
-        self.inStatus = False
-
-    #--------------------------------------------------------------------
-    def start_td(self, attrList):
-        for name, val in attrList:
-            if name == 'class':
-                if val == 'patFuncTitle':
-                    self.inTitle = True
-                    self.save_bgn()
-                if val == 'patFuncStatus':
-                    self.inStatus = True
-                    self.save_bgn()
-
-    #--------------------------------------------------------------------
-    def end_td(self):
-        if self.inTitle:
-            self.inTitle = False
-            self.title = self.save_end().strip()
-        if self.inStatus:
-            self.inStatus = False
-            title = self.title
-            daysUntilDue = parseStatus(self.save_end())
-            self.title = None
-            self.booksDue.append((title, daysUntilDue))
-
-            
-
 #------------------------------------------------------------------------
 # The main body of the script.
 
 checkJobs()
-

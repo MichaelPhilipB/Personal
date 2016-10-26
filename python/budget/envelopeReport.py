@@ -4,6 +4,7 @@
 
 from decimal import Decimal
 import datetime
+import os
 import re
 import shutil
 import smtplib
@@ -95,7 +96,8 @@ def sendEmail(mailTos, balanceDict):
                    'Groceries',
                    'Groceries Party',
                    'Household',
-                   'Household Decoration' ]
+                   'Household Decoration',
+                   'Salary Spouse']
 
     dateStr = datetime.date.today().strftime("%b %d, %Y")
 
@@ -127,7 +129,7 @@ def sendGmail(mailTo, mailSubject, mailBody):
     #smtpPort = 465
     smtpPort = 587
     smtpUserName = "Michael.Philip.Brady@gmail.com"
-    smtpPassword = "Naz3#gul"
+    smtpPassword = readPassword()
 
     mailFrom =  "Michael.Philip.Brady@gmail.com"
 
@@ -147,6 +149,15 @@ def sendGmail(mailTo, mailSubject, mailBody):
     server.sendmail(mailFrom, mailTo, mailText)
 
     # There is an smtp QUIT command, but sending it gives an SSL error.
+
+#-------------------------------------------------------------------
+def readPassword():
+    '''Reads the password from a file.
+    '''
+
+    fileName = os.path.join(os.path.dirname(__file__), 'credential.txt')
+
+    return open(fileName, 'r').read().strip()
 
 #-------------------------------------------------------------------
 def process(inFile, outFile, mailTos):

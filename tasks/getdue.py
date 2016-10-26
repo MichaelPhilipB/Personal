@@ -145,12 +145,12 @@ def sendGmail(mailTo, mailBody):
     @param mailTo The address to send the email to.
     @param mailBody The body of the email.
     """
-    
+
     smtpServer = "smtp.gmail.com"
     #smtpPort = 465
     smtpPort = 587
     smtpUserName = "Michael.Philip.Brady@gmail.com"
-    smtpPassword = "Naz3#gul"
+    smtpPassword = readPassword()
 
     mailFrom =  "Michael.Philip.Brady@gmail.com"
     mailSubject = "Barrington Library books due soon"
@@ -171,6 +171,15 @@ def sendGmail(mailTo, mailBody):
     server.sendmail(mailFrom, mailTo, mailText)
 
     # There is an smtp QUIT command, but sending it gives an SSL error.
+
+#------------------------------------------------------------------------
+def readPassword():
+    '''Reads the password from a file.
+    '''
+
+    fileName = os.path.join(os.path.dirname(__file__), 'credential.txt')
+
+    return open(fileName, 'r').read().strip()
 
 #------------------------------------------------------------------------
 def readAndSendEmail(userName):

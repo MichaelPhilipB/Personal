@@ -23,7 +23,7 @@ import urlparse
 # A dictionary of names to (email, libarary ID) tuples.
 users = {
     "Michael" : ("Michael.Philip.Brady@gmail.com", '21332000671604', '1234'),
-    "Eileen"  : ("Eileen.Brady.98@gmail.com",      '21332000729253', '1234'),
+    "Eileen"  : ("Eileen.Brady.98@gmail.com",      '21332000818353', '1234'),
     "Owen"    : ("Michael.Philip.Brady@gmail.com", '21332000676587', '1234'),    
     }
 
@@ -41,6 +41,7 @@ def parseStatus(status):
         'DISPLAY Renewed 1 time',
         'DISPLAY',
         'Renewed 1 time',
+        'Renewed 2 times',
         '+1 HOLD',
         ]
     for stockPhrase in stockPhrases:
